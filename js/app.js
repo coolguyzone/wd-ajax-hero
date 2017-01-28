@@ -57,4 +57,38 @@
   };
 
   // ADD YOUR CODE HERE
+  let form = document.querySelector('form');
+  let title = document.querySelector('#search');
+  let listings = document.querySelector('#listings');
+
+  form.addEventListener('submit', Search);
+
+  function Search(event) {
+    event.preventDefault();
+    while (movies.length > 0) {
+      movies.pop();
+    }
+    listings.innerHTML = '';
+    fetch(`http://www.omdbapi.com/?t=${title.value}`)
+    .then(function(res){
+      return res.json();
+    })
+    .then (function(res){
+      console.log(res)
+      let filmObject = new Object;
+      filmObject.id = res.imdbID;
+      filmObject.poster = res.Poster;
+      filmObject.title = res.Title;
+      filmObject.year = res.Year;
+      filmObject.plot = res.Plot;
+      console.log(filmObject);
+      movies.push(filmObject);
+        renderMovies();
+
+    })
+  }
+
+
+
+
 })();
