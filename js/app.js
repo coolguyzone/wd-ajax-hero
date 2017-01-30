@@ -57,43 +57,57 @@
   };
 
   // ADD YOUR CODE HERE
+  //DECLARE VARS
   let form = document.querySelector('form');
   let title = document.querySelector('#search');
   let listings = document.querySelector('#listings');
+  let plot='';
 
+  //ADD EVENT LISTENER TO SEARCH FORM
   form.addEventListener('submit', Search);
-
+  //SEARCH CALLBACK
   function Search(event) {
     event.preventDefault();
+    //IF FORM IS BLANK, VALIDATE WITH A TOAST
     if (title.value === '') {
       Materialize.toast('Please Enter A Search Term!', 4000)
     }
     else {
+      //CLEAR ANY PREVIOUS SEARCH RESULTS FROM MOVIES ARRAY
       while (movies.length > 0) {
         movies.pop();
       }
+      //CLEAR THE DOM ELEMENT CONTAINING PREVIOUS SEARCH RESULTS
       listings.innerHTML = '';
-      fetch(`http://www.omdbapi.com/?t=${title.value}`)
+      //FETCH OMDB SEARCH DATA
+      fetch(`http://www.omdbapi.com/?s=${title.value}`)
+      //JSONIFY RESPONSE OBJECT
       .then(function(res){
         return res.json();
       })
+      //IF THERE ARE HITS, FOR EACH HIT, CREATE A MOVIE OBJECT AND PUSH TO MOVIES ARRAY
       .then (function(res){
-        console.log(res)
-        let filmObject = new Object;
-        filmObject.id = res.imdbID;
-        filmObject.poster = res.Poster;
-        filmObject.title = res.Title;
-        filmObject.year = res.Year;
-        filmObject.plot = res.Plot;
-        console.log(filmObject);
-        movies.push(filmObject);
+        if (res.Search){
+          res.Search.forEach(function(element){
+
+            let filmObject = new Object;
+            filmObject.id = element.imdbID;
+            filmObject.poster = element.Poster;
+            filmObject.title = element.Title;
+            filmObject.year = element.Year;
+            filmObject.plot = plot;
+            console.log(plot);
+            movies.push(filmObject);
+
+          });
           renderMovies();
-      })
+
+        }
+        //IF THERE ARE NO HITS, TOAST VALIDATION
+        else {
+          Materialize.toast('No Results!', 4000);
+        }
+      });
     }
-
   }
-
-
-
-
 })();
